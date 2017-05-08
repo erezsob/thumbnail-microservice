@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "mocha --reporter progress -- \"./*.test.js\""
+    "test": "mocha --reporter progress -- \"./*.test.js\"",
+    "lint": "standard --verbose"
   },
   "author": "Erez Sobel",
   "license": "ISC",
