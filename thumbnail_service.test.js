@@ -86,7 +86,23 @@ describe('thumbnailService', () => {
     it.only('should check that extension is one of the desired ones', (done) => {
        const testData = [
         {
+          inputData: 'jpeg',
+          expectedData: true
+        },
+        {
           inputData: 'png',
+          expectedData: true
+        },
+        {
+          inputData: 'gif',
+          expectedData: true
+        },
+        {
+          inputData: 'ico',
+          expectedData: true
+        },
+        {
+          inputData: 'webm',
           expectedData: true
         },
         {
