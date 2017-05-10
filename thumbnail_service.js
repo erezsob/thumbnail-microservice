@@ -7,8 +7,18 @@ const thumbnailService = (req, res) => {
   return validity(req);
 }
 
+const validity = (req) => {
+  const params = req.params;
+  const base64Data = verifyUrlBase64(params.urlBase64);
+  const maxWidthData = verifyMaxWidthHeight(params.maxWidth);
+  const maxHeightData = verifyMaxWidthHeight(params.maxHeight);
+  const signatureBase64Data = verifySignatureBase64(params.signatureBase64);
+  const extensionData = verifyExtension(params.extension);
+}
+
 /**
- * Composing the function
+ * Composing the function to verify urlBase64
+ * Return true or false
  */
 const verifyUrlBase64 = x => pipe(
   decode,
@@ -29,18 +39,17 @@ const decode = x => Buffer.from(x, 'base64').toString('ascii');
 
 /**
  * Verifying that the maxWidth and maxHeight are according to the rules
- * Returns transformed data or false if failed
+ * Returns true or false
  */
-const verifyMaxWidthHeight = (x, prop) => {
-  const newInt = x[prop] !== 'Number' ? parseInt(x[prop]) : x[prop];
-  return !isNaN(newInt) && +3 < newInt && newInt < +1024 ? newInt : false;
+const verifyMaxWidthHeight = x => {
+  return !isNaN(x) && +3 < x && x < +1024 ? true : false;
 }
 
 
 const verifySignatureBase64 = x => {x.signatureBase64}
 
 /**
- * Check that the property is one of the desired extensions options
+ * Check that the property is one of the allowed extensions options
  * Returns true or false
  */
 const verifyExtension = x => /^jpeg|png|gif|ico|webm$/.test(x);
