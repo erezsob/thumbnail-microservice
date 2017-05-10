@@ -1,16 +1,23 @@
-const thumbnailService = (req, res) => {
+// import gm from 'gm';
+// import bunyan from 'bunyan';
+const { pipe } = require('lodash/fp');
+const validUrl = require('valid-url');
 
-}
 
-const varifyUrlBase64 = () => {}
-const varifyMaxWidth = () => {}
-const varifyMaxHeight = () => {}
-const varifySignatureBase64 = () => {}
-const varifyExtension = () => {}
+// urlBase64
+const verifyUrlBase64 = x => pipe(
+  decode,
+  checkUrlValidity
+);
 
-module.exports = thumbnailService
-module.exports.varifyUrlBase64 = varifyUrlBase64
-module.exports.varifyMaxWidth = varifyMaxWidth
-module.exports.varifyMaxHeight = varifyMaxHeight
-module.exports.varifySignatureBase64 = varifySignatureBase64
-module.exports.varifyExtension = varifyExtension
+const checkUrlValidity = x => validUrl.isUri(x) ? x : false;
+const decode = (x) => Buffer.from(x, 'base64');
+
+
+const verifyMaxHeight = x => {x.maxHeight}
+const verifySignatureBase64 = x => {x.signatureBase64}
+const verifyExtension = x => {x.extension}
+
+
+module.exports = thumbnailService;
+module.exports.checkUrlValidity = checkUrlValidity;
