@@ -1,3 +1,4 @@
+'use strict';
 
 const { expect } = require('chai');
 const thumbnailService = require('./thumbnail_service');
@@ -74,6 +75,28 @@ describe('thumbnailService', () => {
 
       testData.forEach((testItem) => {
         const returnData = thumbnailService.verifyMaxWidthHeight(testItem.inputData.value, testItem.inputData.prop);
+        expect(returnData).to.equal(testItem.expectedData);
+      });
+
+      done();
+    })
+  })
+
+  describe('thumbnailService.verifyExtension', () => {
+    it.only('should check that extension is one of the desired ones', (done) => {
+       const testData = [
+        {
+          inputData: 'png',
+          expectedData: true
+        },
+        {
+          inputData: 'wav',
+          expectedData: false
+        }
+      ];
+
+       testData.forEach((testItem) => {
+        const returnData = thumbnailService.verifyExtension(testItem.inputData);
         expect(returnData).to.equal(testItem.expectedData);
       });
 
