@@ -47,27 +47,27 @@ describe('thumbnailService', () => {
   })
 
   describe('thumbnailService.verifyMaxWidthHeight', () => {
-    it.only('should check if data is a number and between 3 and 1024', (done) => {
+    it('should check if data is a number and between 3 and 1024', (done) => {
 
       const testData = [
         {
-          inputData: {value: '355', prop: 'maxWidth'},
+          inputData: {value: {maxWidth: '355'}, prop: 'maxWidth'},
           expectedData: 355
         },
         {
-          inputData: {value: 400, prop: 'maxHeight'},
+          inputData: {value: {maxHeight: 400}, prop: 'maxHeight'},
           expectedData: 400
         },
         {
-          inputData: {value: 1, prop: 'maxWidth'},
+          inputData: {value: {maxWidth: 1}, prop: 'maxWidth'},
           expectedData: false
         },
         {
-          inputData: {value: '5000', prop: 'maxHeight'},
+          inputData: {value: {maxHeight: '5000'}, prop: 'maxHeight'},
           expectedData: false
         },
         {
-          inputData: {value: 'abcdefg', prop: 'maxWidth'},
+          inputData: {value: {maxWidth: 'abcdefg'}, prop: 'maxWidth'},
           expectedData: false
         }
       ]
@@ -77,6 +77,7 @@ describe('thumbnailService', () => {
         expect(returnData).to.equal(testItem.expectedData);
       });
 
+      done();
     })
   })
 
