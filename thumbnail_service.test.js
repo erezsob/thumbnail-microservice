@@ -5,14 +5,9 @@ const validUrl = require('valid-url');
 
 
 /* eslint-disable no-undef */
-describe('First test', () => {
-  it('should pass', () => {
-    expect(true).to.equal(true)
-  })
-})
 
 describe('thumbnailService', () => {
-  describe.only('thumbnailService.checkUrlValidity', () => {
+  describe('thumbnailService.checkUrlValidity', () => {
     it('should check if a string is a url', (done) => {
       const testData = [
         {
@@ -28,8 +23,27 @@ describe('thumbnailService', () => {
       testData.forEach((testItem) => {
         const returnData = thumbnailService.checkUrlValidity(testItem.inputData);
         expect(returnData).to.equal(testItem.expectedData);
-      });     
+      });    
+       
+      done();
     })
   })
 
+
+  describe('thumbnailService.decode', () => {
+    it('should decode base64', (done) => {
+
+      const encodedString = Buffer.from("http://www.example.com").toString('base64');
+
+      const testData = {
+          inputData: encodedString,
+          expectedData: 'http://www.example.com'
+      }
+
+      const returnData = thumbnailService.decode(testData.inputData);
+      expect(returnData).to.equal(testData.expectedData);     
+      done();
+    })
+  })
+  
 })
