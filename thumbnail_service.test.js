@@ -23,8 +23,8 @@ describe('thumbnailService', () => {
       testData.forEach((testItem) => {
         const returnData = thumbnailService.checkUrlValidity(testItem.inputData);
         expect(returnData).to.equal(testItem.expectedData);
-      });    
-       
+      });
+
       done();
     })
   })
@@ -36,14 +36,48 @@ describe('thumbnailService', () => {
       const encodedString = Buffer.from("http://www.example.com").toString('base64');
 
       const testData = {
-          inputData: encodedString,
-          expectedData: 'http://www.example.com'
+        inputData: encodedString,
+        expectedData: 'http://www.example.com'
       }
 
       const returnData = thumbnailService.decode(testData.inputData);
-      expect(returnData).to.equal(testData.expectedData);     
+      expect(returnData).to.equal(testData.expectedData);
       done();
     })
   })
-  
+
+  describe('thumbnailService.verifyMaxWidthHeight', () => {
+    it.only('should check if data is a number and between 3 and 1024', (done) => {
+
+      const testData = [
+        {
+          inputData: {value: '355', prop: 'maxWidth'},
+          expectedData: 355
+        },
+        {
+          inputData: {value: 400, prop: 'maxHeight'},
+          expectedData: 400
+        },
+        {
+          inputData: {value: 1, prop: 'maxWidth'},
+          expectedData: false
+        },
+        {
+          inputData: {value: '5000', prop: 'maxHeight'},
+          expectedData: false
+        },
+        {
+          inputData: {value: 'abcdefg', prop: 'maxWidth'},
+          expectedData: false
+        }
+      ]
+
+      testData.forEach((testItem) => {
+        const returnData = thumbnailService.verifyMaxWidthHeight(testItem.inputData.value, testItem.inputData.prop);
+        expect(returnData).to.equal(testItem.expectedData);
+      });
+
+    })
+  })
+
 })
