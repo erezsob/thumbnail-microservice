@@ -8,12 +8,12 @@ const validUrl = require('valid-url');
 /* eslint-disable no-undef */
 
 describe('thumbnailService', () => {
-  describe('thumbnailService.checkUrlValidity', () => {
+  describe('checkUrlValidity', () => {
     it('should check if a string is a url', (done) => {
       const testData = [
         {
           inputData: 'http://www.example.com',
-          expectedData: 'http://www.example.com'
+          expectedData: true
         },
         {
           inputData: 'abcdefg',
@@ -31,7 +31,7 @@ describe('thumbnailService', () => {
   })
 
 
-  describe('thumbnailService.decode', () => {
+  describe('decode', () => {
     it('should decode base64', (done) => {
 
       const encodedString = Buffer.from("http://www.example.com").toString('base64');
@@ -47,34 +47,26 @@ describe('thumbnailService', () => {
     })
   })
 
-  describe('thumbnailService.verifyMaxWidthHeight', () => {
+  describe('verifyMaxWidthHeight', () => {
     it('should check if data is a number and between 3 and 1024', (done) => {
 
       const testData = [
         {
-          inputData: {value: {maxWidth: '355'}, prop: 'maxWidth'},
-          expectedData: 355
+          inputData: 400,
+          expectedData: true
         },
         {
-          inputData: {value: {maxHeight: 400}, prop: 'maxHeight'},
-          expectedData: 400
-        },
-        {
-          inputData: {value: {maxWidth: 1}, prop: 'maxWidth'},
+          inputData: 1,
           expectedData: false
         },
         {
-          inputData: {value: {maxHeight: '5000'}, prop: 'maxHeight'},
-          expectedData: false
-        },
-        {
-          inputData: {value: {maxWidth: 'abcdefg'}, prop: 'maxWidth'},
+          inputData: '5000',
           expectedData: false
         }
       ]
 
       testData.forEach((testItem) => {
-        const returnData = thumbnailService.verifyMaxWidthHeight(testItem.inputData.value, testItem.inputData.prop);
+        const returnData = thumbnailService.verifyMaxWidthHeight(testItem.inputData);
         expect(returnData).to.equal(testItem.expectedData);
       });
 
@@ -82,8 +74,8 @@ describe('thumbnailService', () => {
     })
   })
 
-  describe('thumbnailService.verifyExtension', () => {
-    it.only('should check that extension is one of the desired ones', (done) => {
+  describe('verifyExtension', () => {
+    it('should check that the extension is one of the allowed ones', (done) => {
        const testData = [
         {
           inputData: 'jpeg',
