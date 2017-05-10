@@ -11,7 +11,7 @@ const verifyUrlBase64 = x => pipe(
 );
 
 const checkUrlValidity = x => validUrl.isUri(x) ? x : false;
-const decode = (x) => Buffer.from(x, 'base64');
+const decode = x => Buffer.from(x, 'base64').toString('ascii');
 
 
 const verifyMaxHeight = x => {x.maxHeight}
@@ -21,3 +21,4 @@ const verifyExtension = x => {x.extension}
 
 module.exports = thumbnailService;
 module.exports.checkUrlValidity = checkUrlValidity;
+module.exports.decode = decode;
