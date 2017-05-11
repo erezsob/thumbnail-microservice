@@ -2,24 +2,47 @@
 const bunyan = require('bunyan')
 const { pipe } = require('lodash/fp')
 const validUrl = require('valid-url')
+const fs = require('fs')
+const gm = require('gm')
+const request = require('request');
+const secret = 'qwerty';
+const cache = 60
 
 // Initializing bunyan for logs
-const log = bunyan.createLogger({name: 'thumbnailer'})
+const log = bunyan.createLogger({ name: 'thumbnailer' })
 
 /**
  * The main thumbnailer service function
  */
 const thumbnailService = (req, res) => {
-  // return validity(req, res);
+  if (validity(req, res)) {
+      res.set({
+        'Content-Type': `image/${req.params.extension}`, 
+        'Cache-Control': `max-age=${cache}`
+      })
+      rescale(req).pipe(res)
+  }
 }
 
 /**
  * Rescaling images
  */
-// const rescale = req => {
-//   const decodedUrl = decode(req.params.urlBase64);
-
-// }
+const rescale = req => {
+  const decodedUrl = decode(req.params.urlBase64);
+  if (/^gif|ico|webm$/.test(req.params.extension)) {
+    gm.subClass({ imageMagick: true })
+  }
+  return gm(request(decodedUrl))
+  .resize(req.params.maxWidth, req.params.maxHeight)
+  .stream((err, stdout, stderr) => {
+    if (!err) {
+      log.info('Rescaling is finished')
+    }
+    else {
+      log.warn(err)
+    }
+  })
+}
 
 /**
  * Validating all the URI data using the helper validating functions
@@ -97,3 +120,4 @@ module.exports.decode = decode
 module.exports.validateMaxWidthHeight = validateMaxWidthHeight
 module.exports.validateExtension = validateExtension
 module.exports.validity = validity
+module.exports.rescale = rescale
