@@ -93,7 +93,7 @@ const checkUrlValidity = url => !!validUrl.isUri(url)
  * Decoding data from Base64 to regular string (URL string if it's valid)
  * Returns the decoded string
  */
-const decode = encodedUrl => Buffer.from(encodedUrl, 'base64').toString('ascii')
+const decode = encodedUrl => base64url.decode(base64url.unescape(encodedUrl, 'base64'))
 
 /**
  * Validating that the maxWidth and maxHeight are according to the rules

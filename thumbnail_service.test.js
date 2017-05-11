@@ -32,7 +32,7 @@ describe('thumbnailService', () => {
 
   describe('decode', () => {
     it('should decode base64', (done) => {
-      const encodedString = base64url.escape('http://www.example.com')
+      const encodedString = base64url.escape(base64url.encode('http://www.example.com'))
 
       const testData = {
         inputData: encodedString,
@@ -113,13 +113,16 @@ describe('thumbnailService', () => {
     it('should validate all the url params', (done) => {
       const req = {
         params: {
-          urlBase64: base64url.escape('http://www.example.com'),
+          urlBase64: base64url.escape(base64url.encode('http://www.example.com')),
           maxWidth: 600,
           maxHeight: 600,
-          signatureBase64: true,
+          signatureBase64: '',
           extension: 'gif'
         }
       }
+      
+      const secret = 'meeseeks'
+      req.params.signatureBase64 = thumbnailService.cryptFunc(req.params, secret)
 
       const returnData = thumbnailService.validity(req)
       expect(returnData).to.equal(true)
@@ -133,7 +136,7 @@ describe('thumbnailService', () => {
 
       const req = {
         params: {
-          urlBase64: base64url.escape('http://www.example.com'),
+          urlBase64: base64url.escape(base64url.decode('http://www.example.com')),
           maxWidth: 600,
           maxHeight: 600,
           signatureBase64: '',
