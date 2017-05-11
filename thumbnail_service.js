@@ -1,11 +1,11 @@
-// import gm from 'gm';
 const bunyan = require('bunyan')
 const { pipe } = require('lodash/fp')
 const validUrl = require('valid-url')
-const fs = require('fs')
 const gm = require('gm')
 const request = require('request');
-const secret = 'qwerty';
+const crypto = require('crypto');
+const base64url = require('base64-url');
+const secret = 'meeseeks';
 const cache = 60
 
 // Initializing bunyan for logs
@@ -53,7 +53,7 @@ const validity = (req, res) => {
   const base64Data = validateUrlBase64(params.urlBase64)
   const maxWidthData = validateMaxWidthHeight(params.maxWidth)
   const maxHeightData = validateMaxWidthHeight(params.maxHeight)
-  const signatureBase64Data = validateSignatureBase64(params.signatureBase64)
+  const signatureBase64Data = validateSignatureBase64(params, secret)
   const extensionData = validateExtension(params.extension)
 
   if (base64Data && maxWidthData && maxHeightData && extensionData && signatureBase64Data) {
@@ -78,7 +78,7 @@ const validity = (req, res) => {
  * Composing the function to validate urlBase64
  * Returns true or false
  */
-const validateUrlBase64 = x => pipe(
+const validateUrlBase64 = () => pipe(
   decode,
   checkUrlValidity
 )
@@ -87,26 +87,42 @@ const validateUrlBase64 = x => pipe(
  * Check Url Validity
  * Returns true or false
  */
-const checkUrlValidity = x => !!validUrl.isUri(x)
+const checkUrlValidity = url => !!validUrl.isUri(url)
 
 /**
  * Decoding data from Base64 to regular string (URL string if it's valid)
  * Returns the decoded string
  */
-const decode = x => Buffer.from(x, 'base64').toString('ascii')
+const decode = encodedUrl => Buffer.from(encodedUrl, 'base64').toString('ascii')
 
 /**
  * Validating that the maxWidth and maxHeight are according to the rules
  * Returns true or false
  */
-const validateMaxWidthHeight = x => {
-  return !!(!isNaN(x) && +3 < x && x < +1024)
+const validateMaxWidthHeight = sizeParam => {
+  return !!(!isNaN(sizeParam) && +3 < sizeParam && sizeParam < +1024)
 }
 
 /**
  * Validate the signature
  */
-const validateSignatureBase64 = x => x
+const validateSignatureBase64 = (params, secret) => {
+  return params.signatureBase64 === cryptFunc(params, secret)
+}
+
+/**
+ * Create a new crypted signature from the url params
+ * Return {String}
+ */
+const cryptFunc = (params, secret) => {
+   const cryptedParams = crypto.createHmac('sha256', secret)
+    .update(params.urlBase64)
+    .update(params.maxWidth.toString())
+    .update(params.maxHeight.toString())
+    .update(params.extension)
+    .digest('base64')
+  return base64url.escape(cryptedParams)
+}
 
 /**
  * Check that the property is one of the allowed extensions options
@@ -121,3 +137,5 @@ module.exports.validateMaxWidthHeight = validateMaxWidthHeight
 module.exports.validateExtension = validateExtension
 module.exports.validity = validity
 module.exports.rescale = rescale
+module.exports.validateSignatureBase64 = validateSignatureBase64
+module.exports.cryptFunc = cryptFunc
