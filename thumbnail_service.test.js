@@ -127,7 +127,7 @@ describe('thumbnailService', () => {
   })
 
   describe('validateSignatureBase64', () => {
-    it.only('should create new signature and compare it to the ' +
+    it('should create new signature and compare it to the ' +
     'signatureBase64 parameter', (done) => {
 
       const req = {
@@ -141,13 +141,10 @@ describe('thumbnailService', () => {
       }
 
       const secret = 'meeseeks'
-      const signature = req.params.urlBase64 + req.params.maxWidth.toString() 
-      + req.params.maxHeight.toString() + req.params.extension + secret
+      req.params.signatureBase64 = thumbnailService.cryptFunc(req.params, secret)
 
-      req.params.signatureBase64 = Buffer.from(signature).toString('base64')
-
-      const returnData = thumbnailService.validateSignatureBase64(req)
-      expect(returnData).to.equal(req.params.expectedSignature)
+      const returnData = thumbnailService.validateSignatureBase64(req.params, secret)
+      expect(returnData).to.equal(true)
       done()
     })
   })
