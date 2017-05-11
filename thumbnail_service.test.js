@@ -3,6 +3,7 @@
 const { expect } = require('chai')
 const thumbnailService = require('./thumbnail_service')
 const sinon = require('sinon')
+const base64url = require('base64-url');
 
 /* eslint-disable no-undef */
 
@@ -31,7 +32,7 @@ describe('thumbnailService', () => {
 
   describe('decode', () => {
     it('should decode base64', (done) => {
-      const encodedString = Buffer.from('http://www.example.com').toString('base64')
+      const encodedString = base64url.escape('http://www.example.com')
 
       const testData = {
         inputData: encodedString,
@@ -112,7 +113,7 @@ describe('thumbnailService', () => {
     it('should validate all the url params', (done) => {
       const req = {
         params: {
-          urlBase64: Buffer.from('http://www.example.com').toString('base64'),
+          urlBase64: base64url.escape('http://www.example.com'),
           maxWidth: 600,
           maxHeight: 600,
           signatureBase64: true,
@@ -132,7 +133,7 @@ describe('thumbnailService', () => {
 
       const req = {
         params: {
-          urlBase64: Buffer.from('http://www.example.com').toString('base64'),
+          urlBase64: base64url.escape('http://www.example.com'),
           maxWidth: 600,
           maxHeight: 600,
           signatureBase64: '',
