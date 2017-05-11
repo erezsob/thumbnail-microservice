@@ -1,19 +1,41 @@
 // import gm from 'gm';
-// import bunyan from 'bunyan';
+const bunyan = require('bunyan');
 const { pipe } = require('lodash/fp');
 const validUrl = require('valid-url');
 
 const thumbnailService = (req, res) => {
-  return validity(req);
+  // return validity(req, res);
 }
 
-const validity = (req) => {
+// const rescale = req => {
+//   const decodedUrl = decode(req.params.urlBase64);
+
+// }
+
+const validity = (req, res) => {
   const params = req.params;
   const base64Data = verifyUrlBase64(params.urlBase64);
   const maxWidthData = verifyMaxWidthHeight(params.maxWidth);
   const maxHeightData = verifyMaxWidthHeight(params.maxHeight);
   const signatureBase64Data = verifySignatureBase64(params.signatureBase64);
   const extensionData = verifyExtension(params.extension);
+
+  if (base64Data && maxWidthData && maxHeightData && extensionData && signatureBase64Data) {
+    return true;
+  }
+  
+  if (signatureBase64Data === false) {
+    res.status(403);
+    bunyan.ERROR('Signature is invalid')
+    return false;
+  }
+
+  if ((base64Data && maxWidthData && maxHeightData && extensionData) === false && signatureBase64Data === true) {
+    bunyan.ERROR('One ro some parameters that are not the signature have failed')    
+    res.status(400);
+    return false;    
+  }
+  return false;      
 }
 
 /**
@@ -46,7 +68,7 @@ const verifyMaxWidthHeight = x => {
 }
 
 
-const verifySignatureBase64 = x => {x.signatureBase64}
+const verifySignatureBase64 = x => x;  
 
 /**
  * Check that the property is one of the allowed extensions options
@@ -60,3 +82,4 @@ module.exports.checkUrlValidity = checkUrlValidity;
 module.exports.decode = decode;
 module.exports.verifyMaxWidthHeight = verifyMaxWidthHeight;
 module.exports.verifyExtension = verifyExtension;
+module.exports.validity = validity;
