@@ -8,6 +8,7 @@ const port = process.env.PORT || 3001
 const api = require('./routes/api')
 
 app.use('/', api)
+app.use(router.errorsMiddleware)
 
 app.listen(port, err => {
   if (err) {
