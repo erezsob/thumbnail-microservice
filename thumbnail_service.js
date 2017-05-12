@@ -33,6 +33,7 @@ const rescale = (req, res) => {
     gm.subClass({ imageMagick: true })
   }
   return gm(request(decodedUrl))
+  .setFormat(req.params.extension)
   .resize(req.params.maxWidth, req.params.maxHeight)
   .stream((err, stdout, stderr) => {
     if (!err) {
@@ -63,13 +64,13 @@ const validity = (req, res) => {
 
   if (signatureBase64Data === false) {
     log.warn('Signature is invalid')
-    res.status(403)
+    res.status(403).send('Signature is invalid')
     return false
   }
 
   if ((base64Data && maxWidthData && maxHeightData && extensionData) === false && signatureBase64Data === true) {
-    log.warn('One ro some parameters that are not the signature have failed')
-    res.status(400)
+    log.warn('One or some parameters that are not the signature have failed')
+    res.status(400).send('One or some parameters that are not the signature have failed')
     return false
   }
   return false
