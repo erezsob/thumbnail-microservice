@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "shared-secret": "meeseeks",
+    "cache-time": 60,
+    "retries": 3,
+    "timeouts": 10000
+  }
+}

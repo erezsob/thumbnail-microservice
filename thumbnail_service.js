@@ -5,8 +5,9 @@ const gm = require('gm')
 const request = require('request');
 const crypto = require('crypto');
 const base64url = require('base64-url');
-const secret = 'meeseeks';
-const cache = 60
+const config = require('config');
+const secret = config.get('@thumbnailer.shared-secret');
+const cache = config.get('@thumbnailer.cache-time');
 
 // Initializing bunyan for logs
 const log = bunyan.createLogger({ name: 'thumbnailer' })
