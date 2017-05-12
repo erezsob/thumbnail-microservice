@@ -2,11 +2,9 @@
 
 const { expect } = require('chai')
 const thumbnailService = require('./thumbnail_service')
-const sinon = require('sinon')
-const base64url = require('base64-url');
-const config = require('config');
+const base64url = require('base64-url')
+const config = require('config')
 const image = 'http://vignette2.wikia.nocookie.net/rickandmorty/images/1/1e/Rick_and_morty_icon.png/revision/latest?cb=20150805041642.png'
-
 
 /* eslint-disable no-undef */
 
@@ -122,8 +120,8 @@ describe('thumbnailService', () => {
           extension: 'png'
         }
       }
-      
-      const secret = config.get('settings.shared-secret');
+
+      const secret = config.get('settings.shared-secret')
       req.params.signatureBase64 = thumbnailService.cryptFunc(req.params, secret)
 
       const returnData = thumbnailService.validity(req)
@@ -135,7 +133,6 @@ describe('thumbnailService', () => {
   describe('validateSignatureBase64', () => {
     it('should create new signature and compare it to the ' +
     'signatureBase64 parameter', (done) => {
-
       const req = {
         params: {
           urlBase64: base64url.escape(base64url.decode(image)),
@@ -146,7 +143,7 @@ describe('thumbnailService', () => {
         }
       }
 
-      const secret = config.get('settings.shared-secret');
+      const secret = config.get('settings.shared-secret')
       req.params.signatureBase64 = thumbnailService.cryptFunc(req.params, secret)
 
       const returnData = thumbnailService.validateSignatureBase64(req.params, secret)

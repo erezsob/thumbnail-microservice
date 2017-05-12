@@ -2,10 +2,10 @@ const bunyan = require('bunyan')
 const { pipe } = require('lodash/fp')
 const validUrl = require('valid-url')
 const gm = require('gm')
-const request = require('request');
-const crypto = require('crypto');
-const base64url = require('base64-url');
-const config = require('config');
+const request = require('request')
+const crypto = require('crypto')
+const base64url = require('base64-url')
+const config = require('config')
 
 // Initializing bunyan for logs
 const log = bunyan.createLogger({ name: 'thumbnailer' })
@@ -14,13 +14,13 @@ const log = bunyan.createLogger({ name: 'thumbnailer' })
  * The main thumbnailer service function
  */
 const thumbnailService = (req, res) => {
-  const cache = config.get('settings.cache-time');
+  const cache = config.get('settings.cache-time')
   if (validity(req, res)) {
-      res.set({
-        'Content-Type': `image/${req.params.extension}`, 
-        'Cache-Control': `max-age=${cache}`
-      })
-      rescale(req).pipe(res)
+    res.set({
+      'Content-Type': `image/${req.params.extension}`,
+      'Cache-Control': `max-age=${cache}`
+    })
+    rescale(req).pipe(res)
   }
 }
 
@@ -28,7 +28,7 @@ const thumbnailService = (req, res) => {
  * Rescaling images
  */
 const rescale = (req, res) => {
-  const decodedUrl = decode(req.params.urlBase64);
+  const decodedUrl = decode(req.params.urlBase64)
   if (/^gif|ico|webm$/.test(req.params.extension)) {
     gm.subClass({ imageMagick: true })
   }
@@ -37,8 +37,7 @@ const rescale = (req, res) => {
   .stream((err, stdout, stderr) => {
     if (!err) {
       log.info('Rescaling is finished')
-    }
-    else {
+    } else {
       log.warn(err)
     }
   })
@@ -49,8 +48,8 @@ const rescale = (req, res) => {
  * Returns true or false
  */
 const validity = (req, res) => {
-  const secret = config.get('settings.shared-secret');
-  
+  const secret = config.get('settings.shared-secret')
+
   const params = req.params
   const base64Data = validateUrlBase64(params.urlBase64)
   const maxWidthData = validateMaxWidthHeight(params.maxWidth)
@@ -63,8 +62,8 @@ const validity = (req, res) => {
   }
 
   if (signatureBase64Data === false) {
-    res.status(403)
     log.warn('Signature is invalid')
+    res.status(403)
     return false
   }
 
@@ -117,7 +116,7 @@ const validateSignatureBase64 = (params, secret) => {
  * Return {String}
  */
 const cryptFunc = (params, secret) => {
-   const cryptedParams = crypto.createHmac('sha256', secret)
+  const cryptedParams = crypto.createHmac('sha256', secret)
     .update(params.urlBase64)
     .update(params.maxWidth.toString())
     .update(params.maxHeight.toString())

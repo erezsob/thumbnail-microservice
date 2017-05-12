@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "test": "mocha --reporter progress -- \"./*.test.js\"",
-    "lint": "standard --verbose"
+    "lint": "standard"
   },
   "author": "Erez Sobel",
   "license": "ISC",
