@@ -5,6 +5,8 @@ const thumbnailService = require('./thumbnail_service')
 const sinon = require('sinon')
 const base64url = require('base64-url');
 const config = require('config');
+const image = 'http://vignette2.wikia.nocookie.net/rickandmorty/images/1/1e/Rick_and_morty_icon.png/revision/latest?cb=20150805041642.png'
+
 
 /* eslint-disable no-undef */
 
@@ -13,7 +15,7 @@ describe('thumbnailService', () => {
     it('should check if a string is a url', (done) => {
       const testData = [
         {
-          inputData: 'http://www.example.com',
+          inputData: image,
           expectedData: true
         },
         {
@@ -33,11 +35,11 @@ describe('thumbnailService', () => {
 
   describe('decode', () => {
     it('should decode base64', (done) => {
-      const encodedString = base64url.escape(base64url.encode('http://www.example.com'))
+      const encodedString = base64url.escape(base64url.encode(image))
 
       const testData = {
         inputData: encodedString,
-        expectedData: 'http://www.example.com'
+        expectedData: image
       }
 
       const returnData = thumbnailService.decode(testData.inputData)
@@ -105,7 +107,6 @@ describe('thumbnailService', () => {
         const returnData = thumbnailService.validateExtension(testItem.inputData)
         expect(returnData).to.equal(testItem.expectedData)
       })
-
       done()
     })
   })
@@ -114,11 +115,11 @@ describe('thumbnailService', () => {
     it('should validate all the url params', (done) => {
       const req = {
         params: {
-          urlBase64: base64url.escape(base64url.encode('http://www.example.com')),
-          maxWidth: 600,
-          maxHeight: 600,
+          urlBase64: base64url.escape(base64url.encode(image)),
+          maxWidth: 100,
+          maxHeight: 100,
           signatureBase64: '',
-          extension: 'gif'
+          extension: 'png'
         }
       }
       
@@ -137,11 +138,11 @@ describe('thumbnailService', () => {
 
       const req = {
         params: {
-          urlBase64: base64url.escape(base64url.decode('http://www.example.com')),
-          maxWidth: 600,
-          maxHeight: 600,
+          urlBase64: base64url.escape(base64url.decode(image)),
+          maxWidth: 100,
+          maxHeight: 100,
           signatureBase64: '',
-          extension: 'gif'
+          extension: 'png'
         }
       }
 
