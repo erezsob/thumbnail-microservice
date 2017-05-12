@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const bunyan = require('bunyan')
+const config = require('config');
 
 // Initializing bunyan for logs
 const log = bunyan.createLogger({name: 'thumbnailer'})
@@ -9,10 +10,17 @@ const thumbnailService = require('../thumbnail_service')
 
 router.route('/:urlBase64/:maxWidth/:maxHeight/:signatureBase64.:extension')
 .get(thumbnailService)
-.catch(error => {
+
+/**
+ * Middleware for handling errors when attempting retrival
+ */
+const errorsMiddleware = (err, req, res, next) => {
+  const retries = config.get('settings.retries');
+  const timeouts = config.get('settings.cache-time');
   log.warn(error)
   // Retry retrieving request data a configurable amount of times, if fails respond with 502, if the retrieval times out after a configurable period, respond with 504
   Promise.reject(error)
-})
+}
 
 module.exports = router
+module.exports.errorsMiddleware = errorsMiddleware
