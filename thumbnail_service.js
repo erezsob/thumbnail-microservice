@@ -6,8 +6,6 @@ const request = require('request');
 const crypto = require('crypto');
 const base64url = require('base64-url');
 const config = require('config');
-const secret = config.get('@thumbnailer.shared-secret');
-const cache = config.get('@thumbnailer.cache-time');
 
 // Initializing bunyan for logs
 const log = bunyan.createLogger({ name: 'thumbnailer' })
@@ -16,6 +14,7 @@ const log = bunyan.createLogger({ name: 'thumbnailer' })
  * The main thumbnailer service function
  */
 const thumbnailService = (req, res) => {
+  const cache = config.get('settings.cache-time');
   if (validity(req, res)) {
       res.set({
         'Content-Type': `image/${req.params.extension}`, 
@@ -28,7 +27,7 @@ const thumbnailService = (req, res) => {
 /**
  * Rescaling images
  */
-const rescale = req => {
+const rescale = (req, res) => {
   const decodedUrl = decode(req.params.urlBase64);
   if (/^gif|ico|webm$/.test(req.params.extension)) {
     gm.subClass({ imageMagick: true })
@@ -50,6 +49,8 @@ const rescale = req => {
  * Returns true or false
  */
 const validity = (req, res) => {
+  const secret = config.get('settings.shared-secret');
+  
   const params = req.params
   const base64Data = validateUrlBase64(params.urlBase64)
   const maxWidthData = validateMaxWidthHeight(params.maxWidth)

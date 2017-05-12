@@ -4,6 +4,7 @@ const { expect } = require('chai')
 const thumbnailService = require('./thumbnail_service')
 const sinon = require('sinon')
 const base64url = require('base64-url');
+const config = require('config');
 
 /* eslint-disable no-undef */
 
@@ -121,7 +122,7 @@ describe('thumbnailService', () => {
         }
       }
       
-      const secret = 'meeseeks'
+      const secret = config.get('settings.shared-secret');
       req.params.signatureBase64 = thumbnailService.cryptFunc(req.params, secret)
 
       const returnData = thumbnailService.validity(req)
@@ -144,7 +145,7 @@ describe('thumbnailService', () => {
         }
       }
 
-      const secret = 'meeseeks'
+      const secret = config.get('settings.shared-secret');
       req.params.signatureBase64 = thumbnailService.cryptFunc(req.params, secret)
 
       const returnData = thumbnailService.validateSignatureBase64(req.params, secret)
