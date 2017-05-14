@@ -20,7 +20,7 @@ const errorsMiddleware = (err, req, res, next) => {
 
   log.warn(err)
   // Retry retrieving request data a configurable amount of times, if fails respond with 502, if the retrieval times out after a configurable period, respond with 504
-  res.send(err)
+  return res.send(err)
 }
 
 module.exports = router

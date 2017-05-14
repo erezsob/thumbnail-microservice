@@ -20,12 +20,12 @@ const thumbnailService = (req, res) => {
       'Content-Type': `image/${req.params.extension}`,
       'Cache-Control': `max-age=${cache}`
     })
-    rescale(req).pipe(res)
+    return rescale(req).pipe(res)
   }
 }
 
 /**
- * Rescaling images
+ * Rescaling images and convert to the desired format base on the url params
  */
 const rescale = (req, res) => {
   const decodedUrl = decode(req.params.urlBase64)
@@ -63,21 +63,24 @@ const validity = (req, res) => {
   }
 
   if (signatureBase64Data === false) {
-    log.warn('Signature is invalid')
-    res.status(403).send('Signature is invalid')
+    const msg = 'Signature is invalid'
+    log.warn(msg)
+    res.status(403).send(msg)
     return false
   }
 
-  if ((base64Data && maxWidthData && maxHeightData && extensionData) === false && signatureBase64Data === true) {
-    log.warn('One or some parameters that are not the signature have failed')
-    res.status(400).send('One or some parameters that are not the signature have failed')
+  if ((base64Data && maxWidthData && maxHeightData && extensionData) === false 
+      && signatureBase64Data === true) {
+    const msg = 'One or more parameters that are not the signature have failed'
+    log.warn(msg)
+    res.status(400).send(msg)
     return false
   }
   return false
 }
 
 /**
- * Composing the function to validate urlBase64
+ * Composing functions to validate urlBase64
  * Returns true or false
  */
 const validateUrlBase64 = () => pipe(
@@ -86,7 +89,7 @@ const validateUrlBase64 = () => pipe(
 )
 
 /**
- * Check Url Validity
+ * Check that the url is valid after it had been decoded
  * Returns true or false
  */
 const checkUrlValidity = url => !!validUrl.isUri(url)
@@ -106,15 +109,16 @@ const validateMaxWidthHeight = sizeParam => {
 }
 
 /**
- * Validate the signature
+ * Validate the signature from the url params and the signature created base on 
+ * the  shared secret and the other url params
  */
 const validateSignatureBase64 = (params, secret) => {
   return params.signatureBase64 === cryptFunc(params, secret)
 }
 
 /**
- * Create a new crypted signature from the url params
- * Return {String}
+ * Create a new encrypted signature from the url params and the shared secret
+ * Returns {String}
  */
 const cryptFunc = (params, secret) => {
   const cryptedParams = crypto.createHmac('sha256', secret)

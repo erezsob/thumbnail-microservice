@@ -117,7 +117,7 @@ describe('thumbnailService', () => {
           maxWidth: 100,
           maxHeight: 100,
           signatureBase64: '',
-          extension: 'png'
+          extension: 'jpeg'
         }
       }
 

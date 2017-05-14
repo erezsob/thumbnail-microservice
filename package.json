@@ -1,7 +1,7 @@
 {
   "name": "@thumbnailer/shareiq_thumbnail_service",
   "version": "1.0.0",
-  "description": "",
+  "description": "A mountable express app, which serves rescaled images of given image URLs",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
