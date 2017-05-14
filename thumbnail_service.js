@@ -15,14 +15,61 @@ const log = bunyan.createLogger({ name: 'thumbnailer' })
  */
 const thumbnailService = (req, res) => {
   const cache = config.get('settings.cache-time')
-  if (validity(req, res)) {
+  const { paramsValid, base64Data, maxWidthData, 
+          maxHeightData, signatureBase64Data, extensionData } = validity(req, res);
+
+  if ( paramsValid() ) {
     res.set({
       'Content-Type': `image/${req.params.extension}`,
       'Cache-Control': `max-age=${cache}`
     })
     return rescale(req).pipe(res)
+    
+  } else {
+
+    if (signatureBase64Data === false) {
+      const msg = 'Signature is invalid'
+      log.warn(msg)
+      res.status(403).send(msg)
+    } 
+
+    if ((base64Data && maxWidthData && maxHeightData && extensionData) === false && signatureBase64Data === true) {
+      const msg = 'One or more parameters that are not the signature have failed'
+      log.warn(msg)
+      res.status(400).send(msg)
+    }
+    throw new Error('URL params failed validation')
   }
-  throw new Error('URL params failed validation')
+}
+
+/**
+ * Validating all the URI data using the helper validating functions
+ * Returns true or false
+ */
+const validity = (req, res) => {
+  const secret = config.get('settings.shared-secret')
+  const base64Data = validateUrlBase64(req.params.urlBase64)
+  const maxWidthData = validateMaxWidthHeight(req.params.maxWidth)
+  const maxHeightData = validateMaxWidthHeight(req.params.maxHeight)
+  const signatureBase64Data = validateSignatureBase64(req.params, secret)
+  const extensionData = validateExtension(req.params.extension)
+
+  const paramsValid = () => {
+    if (base64Data && maxWidthData && maxHeightData && extensionData 
+        && signatureBase64Data) {
+      return true
+    }
+    return false
+  }
+
+  return {
+    paramsValid,
+    base64Data,
+    maxWidthData,
+    maxHeightData,
+    signatureBase64Data,
+    extensionData
+  }
 }
 
 /**
@@ -43,41 +90,6 @@ const rescale = (req, res) => {
         log.warn(err)
       }
     })
-}
-
-/**
- * Validating all the URI data using the helper validating functions
- * Returns true or false
- */
-const validity = (req, res) => {
-  const secret = config.get('settings.shared-secret')
-
-  const params = req.params
-  const base64Data = validateUrlBase64(params.urlBase64)
-  const maxWidthData = validateMaxWidthHeight(params.maxWidth)
-  const maxHeightData = validateMaxWidthHeight(params.maxHeight)
-  const signatureBase64Data = validateSignatureBase64(params, secret)
-  const extensionData = validateExtension(params.extension)
-
-  if (base64Data && maxWidthData && maxHeightData && extensionData && signatureBase64Data) {
-    return true
-  }
-
-  if (signatureBase64Data === false) {
-    const msg = 'Signature is invalid'
-    log.warn(msg)
-    res.status(403).send(msg)
-    return false
-  }
-
-  if ((base64Data && maxWidthData && maxHeightData && extensionData) === false &&
-      signatureBase64Data === true) {
-    const msg = 'One or more parameters that are not the signature have failed'
-    log.warn(msg)
-    res.status(400).send(msg)
-    return false
-  }
-  return false
 }
 
 /**

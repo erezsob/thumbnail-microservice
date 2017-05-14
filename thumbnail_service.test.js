@@ -124,8 +124,8 @@ describe('thumbnailService', () => {
       const secret = config.get('settings.shared-secret')
       req.params.signatureBase64 = thumbnailService.cryptFunc(req.params, secret)
 
-      const returnData = thumbnailService.validity(req)
-      expect(returnData).to.equal(true)
+      const { paramsValid } = thumbnailService.validity(req)
+      expect( paramsValid() ).to.equal(true)
       done()
     })
   })
