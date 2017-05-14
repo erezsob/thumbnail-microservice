@@ -22,6 +22,7 @@ const thumbnailService = (req, res) => {
     })
     return rescale(req).pipe(res)
   }
+  throw new Error('URL params failed validation')
 }
 
 /**
@@ -33,15 +34,15 @@ const rescale = (req, res) => {
     gm.subClass({ imageMagick: true })
   }
   return gm(request(decodedUrl))
-  .setFormat(req.params.extension)
-  .resize(req.params.maxWidth, req.params.maxHeight)
-  .stream((err, stdout, stderr) => {
-    if (!err) {
-      log.info('Rescaling is finished')
-    } else {
-      log.warn(err)
-    }
-  })
+    .setFormat(req.params.extension)
+    .resize(req.params.maxWidth, req.params.maxHeight)
+    .stream((err, stdout, stderr) => {
+      if (!err) {
+        log.info('Rescaling is finished')
+      } else {
+        log.warn(err)
+      }
+    })
 }
 
 /**
@@ -69,8 +70,8 @@ const validity = (req, res) => {
     return false
   }
 
-  if ((base64Data && maxWidthData && maxHeightData && extensionData) === false 
-      && signatureBase64Data === true) {
+  if ((base64Data && maxWidthData && maxHeightData && extensionData) === false &&
+      signatureBase64Data === true) {
     const msg = 'One or more parameters that are not the signature have failed'
     log.warn(msg)
     res.status(400).send(msg)
@@ -109,7 +110,7 @@ const validateMaxWidthHeight = sizeParam => {
 }
 
 /**
- * Validate the signature from the url params and the signature created base on 
+ * Validate the signature from the url params and the signature created base on
  * the  shared secret and the other url params
  */
 const validateSignatureBase64 = (params, secret) => {

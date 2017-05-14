@@ -18,8 +18,8 @@ const errorsMiddleware = (err, req, res, next) => {
   // const retries = config.get('settings.retries');
   // const timeouts = config.get('settings.cache-time');
 
+  // TODO: Retry retrieving request data a configurable amount of times, if fails respond with 502, if the retrieval times out after a configurable period, respond with 504
   log.warn(err)
-  // Retry retrieving request data a configurable amount of times, if fails respond with 502, if the retrieval times out after a configurable period, respond with 504
   return res.send(err)
 }
 
