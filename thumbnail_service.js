@@ -15,23 +15,21 @@ const log = bunyan.createLogger({ name: 'thumbnailer' })
  */
 const thumbnailService = (req, res) => {
   const cache = config.get('settings.cache-time')
-  const { paramsValid, base64Data, maxWidthData, 
-          maxHeightData, signatureBase64Data, extensionData } = validity(req, res);
+  const { paramsValid, base64Data, maxWidthData,
+          maxHeightData, signatureBase64Data, extensionData } = validity(req, res)
 
-  if ( paramsValid() ) {
+  if (paramsValid()) {
     res.set({
       'Content-Type': `image/${req.params.extension}`,
       'Cache-Control': `max-age=${cache}`
     })
     return rescale(req).pipe(res)
-    
   } else {
-
     if (signatureBase64Data === false) {
       const msg = 'Signature is invalid'
       log.warn(msg)
       res.status(403).send(msg)
-    } 
+    }
 
     if ((base64Data && maxWidthData && maxHeightData && extensionData) === false && signatureBase64Data === true) {
       const msg = 'One or more parameters that are not the signature have failed'
@@ -55,8 +53,8 @@ const validity = (req, res) => {
   const extensionData = validateExtension(req.params.extension)
 
   const paramsValid = () => {
-    if (base64Data && maxWidthData && maxHeightData && extensionData 
-        && signatureBase64Data) {
+    if (base64Data && maxWidthData && maxHeightData && extensionData &&
+        signatureBase64Data) {
       return true
     }
     return false

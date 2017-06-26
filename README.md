@@ -1,18 +1,18 @@
-# Thumbnailer
+# Thumbnails microservice
 
-Thumbnailer is a mountable express app, which serves rescaled images of given image URLs
+The thumbnails microservice is a mountable express app, which serves rescaled images of given image URLs
 
 
 ### Installation
 
-Thumbnailer requires [Node.js](https://nodejs.org/) v6.4+ to run.
+The service requires [Node.js](https://nodejs.org/) v6.4+ to run.
 
 ```sh
 $ npm install
 $ npm start
 ```
 
-In order to configure settings like shared-secret, retries, cache-time and timeouts - enter the start command and set the new settings as an object in the same line.
+In order to configure settings like shared-secret, number of retries, cache-time and timeouts - enter the start command and set the new settings as an object in the same line.
 
 For example:
 

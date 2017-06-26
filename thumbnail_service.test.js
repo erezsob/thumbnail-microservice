@@ -125,7 +125,7 @@ describe('thumbnailService', () => {
       req.params.signatureBase64 = thumbnailService.cryptFunc(req.params, secret)
 
       const { paramsValid } = thumbnailService.validity(req)
-      expect( paramsValid() ).to.equal(true)
+      expect(paramsValid()).to.equal(true)
       done()
     })
   })
